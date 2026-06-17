@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy · TruthLens</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; }
+  </style>
+</head>
+<body class="min-h-screen bg-stone-50 text-slate-900">
+  <main class="mx-auto w-full max-w-2xl px-4 py-8 sm:py-12">
+
+    <!-- Top bar -->
+    <div class="mb-6 flex items-center justify-between">
+      <a href="/" class="text-sm font-medium text-teal-700 hover:underline">
+        <span class="lang-en">← Back to TruthLens</span>
+        <span class="lang-zh hidden">← 返回首页</span>
+      </a>
+      <div class="flex overflow-hidden rounded-full border border-slate-200 bg-white text-xs font-semibold shadow-sm">
+        <button onclick="setLang('en')" id="lang-en-btn" class="px-3 py-1.5 transition">EN</button>
+        <button onclick="setLang('zh')" id="lang-zh-btn" class="px-3 py-1.5 transition">中</button>
+      </div>
+    </div>
+
+    <!-- ───────── English ───────── -->
+    <article class="lang-en space-y-5 text-sm leading-7 text-slate-700">
+      <h1 class="text-2xl font-bold text-slate-900">Privacy Policy</h1>
+      <p class="text-xs text-slate-500">Last updated: 2026-06-18</p>
+
+      <p>TruthLens ("we", "the service") is a tool that analyzes news screenshots and provides an AI-generated credibility assessment. This policy explains what data we process and how.</p>
+
+      <h2 class="pt-2 text-base font-semibold text-slate-900">1. What we process</h2>
+      <ul class="list-disc space-y-1 pl-5">
+        <li><strong>The image you upload</strong> — the news screenshot you submit for analysis.</li>
+        <li><strong>Your language preference</strong> — stored locally in your browser, not on our servers.</li>
+        <li>We do <strong>not</strong> ask for your name, email, account, or any personal identifier to use the tool.</li>
+      </ul>
+
+      <h2 class="pt-2 text-base font-semibold text-slate-900">2. How your image is used</h2>
+      <ul class="list-disc space-y-1 pl-5">
+        <li>Your uploaded image is sent to a third-party AI service (Alibaba Cloud Bailian / Qwen, with servers located in mainland China) to identify the source and assess credibility.</li>
+        <li>Relevant keywords or titles extracted from the image may be sent to the Brave Search API to gather corroborating evidence.</li>
+        <li>Images are processed <strong>in memory only</strong>. We do <strong>not</strong> store your images on our servers or in any database, and we do not keep them after the analysis returns.</li>
+      </ul>
+
+      <h2 class="pt-2 text-base font-semibold text-slate-900">3. Third-party services</h2>
+      <ul class="list-disc space-y-1 pl-5">
+        <li><strong>Alibaba Cloud (Bailian / DashScope)</strong> — AI image and text analysis.</li>
+        <li><strong>Brave Search API</strong> — evidence search.</li>
+        <li><strong>Advertising (if enabled)</strong> — ad providers such as Google AdSense may set cookies to serve and measure ads.</li>
+      </ul>
+      <p>These providers process data under their own privacy policies. Because the AI provider's servers are in mainland China, do not upload images containing sensitive personal information.</p>
+
+      <h2 class="pt-2 text-base font-semibold text-slate-900">4. Cookies & local storage</h2>
+      <ul class="list-disc space-y-1 pl-5">
+        <li>We use your browser's local storage only to remember your language choice.</li>
+        <li>If advertising is enabled, ad providers may use cookies. You can control cookies through your browser settings.</li>
+      </ul>
+
+      <h2 class="pt-2 text-base font-semibold text-slate-900">5. Accuracy & disclaimer</h2>
+      <p>Results are AI-generated and for reference only. They are not a factual determination, nor an accusation against any individual or organization, and may be inaccurate. Always verify important information with official sources.</p>
+
+      <h2 class="pt-2 text-base font-semibold text-slate-900">6. Changes</h2>
+      <p>We may update this policy as the service evolves. Material changes will be reflected by the "Last updated" date above.</p>
+
+      <h2 class="pt-2 text-base font-semibold text-slate-900">7. Contact</h2>
+      <p>Questions about this policy? Contact us at: <strong>[请替换为你的联系邮箱]</strong></p>
+    </article>
+
+    <!-- ───────── 中文 ───────── -->
+    <article class="lang-zh hidden space-y-5 text-sm leading-7 text-slate-700">
+      <h1 class="text-2xl font-bold text-slate-900">隐私政策</h1>
+      <p class="text-xs text-slate-500">最后更新：2026-06-18</p>
+
+      <p>「假新闻判断器 / TruthLens」（以下称"我们""本服务"）是一个分析新闻截图、并给出 AI 可信度评估的工具。本政策说明我们会处理哪些数据、以及如何处理。</p>
+
+      <h2 class="pt-2 text-base font-semibold text-slate-900">1. 我们处理哪些信息</h2>
+      <ul class="list-disc space-y-1 pl-5">
+        <li><strong>你上传的图片</strong>——即你提交分析的新闻截图。</li>
+        <li><strong>你的语言偏好</strong>——保存在你浏览器本地，不上传到我们服务器。</li>
+        <li>使用本工具<strong>无需</strong>提供姓名、邮箱、账号或任何身份信息。</li>
+      </ul>
+
+      <h2 class="pt-2 text-base font-semibold text-slate-900">2. 你的图片如何被使用</h2>
+      <ul class="list-disc space-y-1 pl-5">
+        <li>你上传的图片会被发送给第三方 AI 服务（阿里云百炼 / 通义千问，服务器位于中国大陆）用于识别来源、评估可信度。</li>
+        <li>从图片中提取的关键词或标题，可能被发送给 Brave Search 搜索接口，用于查找佐证信息。</li>
+        <li>图片<strong>仅在内存中处理</strong>。我们<strong>不会</strong>把你的图片存到服务器或任何数据库，分析返回后即不再保留。</li>
+      </ul>
+
+      <h2 class="pt-2 text-base font-semibold text-slate-900">3. 第三方服务</h2>
+      <ul class="list-disc space-y-1 pl-5">
+        <li><strong>阿里云（百炼 / DashScope）</strong>——AI 图像与文本分析。</li>
+        <li><strong>Brave Search API</strong>——佐证信息搜索。</li>
+        <li><strong>广告（如启用）</strong>——Google AdSense 等广告商可能使用 Cookie 来投放和统计广告。</li>
+      </ul>
+      <p>上述服务按其各自的隐私政策处理数据。由于 AI 服务商服务器位于中国大陆，请勿上传含敏感个人信息的图片。</p>
+
+      <h2 class="pt-2 text-base font-semibold text-slate-900">4. Cookie 与本地存储</h2>
+      <ul class="list-disc space-y-1 pl-5">
+        <li>我们仅使用浏览器本地存储来记住你的语言选择。</li>
+        <li>如启用广告，广告商可能使用 Cookie。你可在浏览器设置中管理 Cookie。</li>
+      </ul>
+
+      <h2 class="pt-2 text-base font-semibold text-slate-900">5. 准确性与免责</h2>
+      <p>分析结果由 AI 生成，仅供参考，不代表事实认定，也不构成对任何个人或机构的指控，可能存在错误。重要信息请以官方发布为准。</p>
+
+      <h2 class="pt-2 text-base font-semibold text-slate-900">6. 政策变更</h2>
+      <p>随着服务演进，我们可能更新本政策。重大变更会体现在上方"最后更新"日期。</p>
+
+      <h2 class="pt-2 text-base font-semibold text-slate-900">7. 联系我们</h2>
+      <p>对本政策有疑问？请联系：<strong>[请替换为你的联系邮箱]</strong></p>
+    </article>
+
+    <footer class="mt-10 border-t border-slate-200 pt-6 text-center text-xs text-slate-400">
+      <span class="lang-en">© TruthLens · AI-generated assessments for reference only.</span>
+      <span class="lang-zh hidden">© 假新闻判断器 · AI 评估仅供参考。</span>
+    </footer>
+  </main>
+
+  <script>
+    function setLang(lang) {
+      localStorage.setItem('lang', lang);
+      applyLang(lang);
+    }
+    function applyLang(lang) {
+      document.documentElement.lang = lang;
+      document.querySelectorAll('.lang-en').forEach(el => el.classList.toggle('hidden', lang !== 'en'));
+      document.querySelectorAll('.lang-zh').forEach(el => el.classList.toggle('hidden', lang !== 'zh'));
+      const active = 'bg-slate-900 text-white';
+      const inactive = 'text-slate-600 hover:bg-slate-100';
+      document.getElementById('lang-en-btn').className = 'px-3 py-1.5 transition ' + (lang === 'en' ? active : inactive);
+      document.getElementById('lang-zh-btn').className = 'px-3 py-1.5 transition ' + (lang === 'zh' ? active : inactive);
+    }
+    applyLang(localStorage.getItem('lang') || 'en');
+  </script>
+</body>
+</html>

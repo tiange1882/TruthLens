@@ -88,6 +88,7 @@
 
     <footer class="mt-auto pt-8 text-center text-xs leading-5 text-slate-500">
       <span id="footer-text"></span>
+      <p class="mt-2"><a id="privacy-link" href="/privacy" class="text-slate-500 underline hover:text-slate-700"></a></p>
     </footer>
   </main>
 
@@ -124,6 +125,7 @@
         errSize:      'Image must be under 10 MB. Please compress and try again.',
         noReasons:    'AI did not return specific reasons.',
         footer:       'AI analysis is for reference only and does not constitute authoritative conclusions. For important information, rely on official sources and professional fact-checkers.\nThis tool uses Eastern Time (ET) as the reference timezone.',
+        privacy:      'Privacy Policy',
         unknownSrc:   'Unknown',
         verdictHints: {
           'Credible':            'AI estimates this is likely genuine (~90%). This is not a verified fact — confirm important news with official sources.',
@@ -162,6 +164,7 @@
         errSize:      '图片不能超过 10MB，请压缩后再上传。',
         noReasons:    'AI 未返回具体理由。',
         footer:       'AI 判断仅供参考，不构成权威结论。重要信息请以官方发布和专业事实核查为准。\n本工具以美东时间（ET）为基准判断发布时间，其他时区的消息可能存在时区差异。',
+        privacy:      '隐私政策',
         unknownSrc:   '未知',
         verdictHints: {
           '可信':    'AI 评估该新闻较可能为真（约 90%）。这不是事实认定，重要信息请以官方发布为准。',
@@ -232,6 +235,7 @@
       document.getElementById('upload-hint').textContent  = t('uploadHint');
       document.getElementById('loading-text').textContent = t('loadingText');
       document.getElementById('footer-text').textContent  = t('footer');
+      document.getElementById('privacy-link').textContent  = t('privacy');
       previewImg.alt = t('previewAlt');
 
       // button text (don't overwrite while loading)
