@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>News Verifier</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+    .fade-in {
+      animation: fadeIn 180ms ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-stone-50 text-slate-900">
+  <main class="mx-auto flex min-h-screen w-full max-w-xl flex-col px-4 py-6 sm:py-10">
+
+    <!-- Header -->
+    <header class="relative mb-6 text-center">
+      <!-- Language toggle -->
+      <div class="absolute right-0 top-0 flex overflow-hidden rounded-full border border-slate-200 bg-white text-xs font-semibold shadow-sm">
+        <button id="lang-en-btn" onclick="setLang('en')"
+          class="px-3 py-1.5 transition">EN</button>
+        <button id="lang-zh-btn" onclick="setLang('zh')"
+          class="px-3 py-1.5 transition">中</button>
+      </div>
+
+      <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-900 text-2xl text-white">🧭</div>
+      <h1 id="hdr-title" class="text-2xl font-bold tracking-normal"></h1>
+      <p  id="hdr-sub"   class="mt-2 text-sm leading-6 text-slate-600"></p>
+      <p  id="hdr-tip"   class="mt-1 text-xs leading-5 text-slate-400"></p>
+    </header>
+
+    <!-- Upload card -->
+    <section class="rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+      <label
+        id="drop-zone"
+        for="file-input"
+        class="flex min-h-56 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-slate-300 bg-slate-50 px-4 py-7 text-center transition hover:border-teal-500 hover:bg-teal-50"
+      >
+        <input id="file-input" class="sr-only" type="file" accept="image/jpeg,image/png,image/webp" />
+
+        <div id="upload-prompt">
+          <div class="mb-3 text-4xl">📷</div>
+          <p id="upload-label" class="text-base font-semibold text-slate-800"></p>
+          <p id="upload-hint"  class="mt-2 text-sm text-slate-500"></p>
+        </div>
+
+        <div id="preview-wrap" class="hidden w-full">
+          <img id="preview-img" alt="" class="mx-auto max-h-72 max-w-full rounded-md object-contain" />
+          <p  id="preview-name" class="mt-3 break-all text-xs text-slate-500"></p>
+        </div>
+      </label>
+
+      <button
+        id="analyze-btn"
+        type="button"
+        class="mt-4 hidden w-full rounded-md bg-teal-700 px-4 py-3 text-base font-semibold text-white transition hover:bg-teal-800 disabled:cursor-not-allowed disabled:bg-slate-400"
+      ></button>
+    </section>
+
+    <!-- Loading -->
+    <div id="loading" class="mt-5 hidden rounded-lg border border-slate-200 bg-white p-5 text-center shadow-sm">
+      <svg class="mx-auto mb-3 h-8 w-8 animate-spin text-teal-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+      </svg>
+      <p id="loading-text" class="text-sm text-slate-600"></p>
+    </div>
+
+    <section id="result" class="mt-5 hidden fade-in"></section>
+
+    <!-- Ad slot -->
+    <div id="ad-slot" class="mt-4 hidden">
+      <div id="ad-inner"><!-- AD_CODE_PLACEHOLDER --></div>
+    </div>
+
+    <footer class="mt-auto pt-8 text-center text-xs leading-5 text-slate-500">
+      <span id="footer-text"></span>
+    </footer>
+  </main>
+
+  <script>
+    /* ── i18n ──────────────────────────────────────────────── */
+    const I18N = {
+      en: {
+        pageTitle:    'News Verifier',
+        title:        'News Verifier',
+        sub:          'Upload a news screenshot. AI identifies the source and assesses credibility.',
+        tip:          'AI analysis has some variability — running it multiple times may give more accurate results.',
+        uploadLabel:  'Click to upload or drag image here',
+        uploadHint:   'JPG, PNG, WEBP · max 10 MB',
+        previewAlt:   'Image preview',
+        analyzeBtn:   'Analyze',
+        reanalyzeBtn: 'Re-analyze',
+        analyzingBtn: 'Analyzing…',
+        loadingText:  'AI is analyzing the image…',
+        verdictLabel: 'Verdict',
+        sourceName:   'Source Name',
+        sourceType:   'Source Type',
+        reasonsTitle: 'Analysis Reasons',
+        suggestion:   'Suggestion',
+        evidenceTitle:'External Evidence',
+        noSourceTitle:'No News Source Detected',
+        noSourceDef:  'No identifiable news source found in the image.',
+        evidenceFound:'Official source matched',
+        evidenceNone: 'No official match found',
+        evidenceStats:(u,h)=>`Searches used: ${u} · Cache hits: ${h}`,
+        errDefault:   'Analysis failed. Please try again.',
+        errNetwork:   'Network error. Please make sure the backend is running.',
+        errType:      'Only JPG, PNG, and WEBP images are supported.',
+        errSize:      'Image must be under 10 MB. Please compress and try again.',
+        noReasons:    'AI did not return specific reasons.',
+        footer:       'AI analysis is for reference only and does not constitute authoritative conclusions. For important information, rely on official sources and professional fact-checkers.\nThis tool uses Eastern Time (ET) as the reference timezone.',
+        unknownSrc:   'Unknown',
+        verdictHints: {
+          'Credible':            'This news is approximately 90% likely to be genuine.',
+          'Suspicious':          'This news is approximately 60% likely to be genuine. AI has some uncertainty — consider analyzing multiple times.',
+          'Likely False':        'This news is only approximately 10% likely to be genuine. Treat with caution.',
+          'Unable to Determine': 'Insufficient information for a reliable verdict.',
+        },
+      },
+      zh: {
+        pageTitle:    '假新闻判断器',
+        title:        '假新闻判断器',
+        sub:          '上传新闻截图，AI 会先识别来源，再给出可信度判断。',
+        tip:          'AI 的分析报告有一定随机性，多次点分析按钮结果更准确哦~',
+        uploadLabel:  '点击上传或拖拽图片到这里',
+        uploadHint:   '支持 JPG、PNG、WEBP，最大 10MB',
+        previewAlt:   '上传图片预览',
+        analyzeBtn:   '开始分析',
+        reanalyzeBtn: '重新分析',
+        analyzingBtn: '分析中…',
+        loadingText:  'AI 正在分析图片内容…',
+        verdictLabel: '判断结果',
+        sourceName:   '来源媒体名',
+        sourceType:   '来源类型',
+        reasonsTitle: '分析理由',
+        suggestion:   '建议',
+        evidenceTitle:'外部证据',
+        noSourceTitle:'未检测到新闻来源',
+        noSourceDef:  '图片中未检测到可识别的新闻来源标识。',
+        evidenceFound:'已找到官网证据',
+        evidenceNone: '未命中官网原文',
+        evidenceStats:(u,h)=>`搜索消耗：${u} 次，缓存命中：${h} 次`,
+        errDefault:   '分析失败，请稍后重试。',
+        errNetwork:   '网络请求失败，请确认后端服务已启动。',
+        errType:      '仅支持 JPG、PNG、WEBP 格式的图片。',
+        errSize:      '图片不能超过 10MB，请压缩后再上传。',
+        noReasons:    'AI 未返回具体理由。',
+        footer:       'AI 判断仅供参考，不构成权威结论。重要信息请以官方发布和专业事实核查为准。\n本工具以美东时间（ET）为基准判断发布时间，其他时区的消息可能存在时区差异。',
+        unknownSrc:   '未知',
+        verdictHints: {
+          '可信':    '该新闻有约 90% 可能性是真实的。',
+          '存疑':    '该新闻有约 60% 可能性是真实的，AI 存在不确定因素，建议多分析几次。',
+          '疑似虚假': '该新闻只有约 10% 可能性是真实的，请谨慎相信。',
+          '无法判断': '信息不足，AI 无法给出可靠判断。',
+        },
+      },
+    };
+
+    /* ── verdict / source styles (handles both languages) ─── */
+    const VERDICT_STYLES = {
+      '可信':                { bg:'bg-emerald-50', border:'border-emerald-200', text:'text-emerald-800', emoji:'✅' },
+      '存疑':                { bg:'bg-amber-50',   border:'border-amber-200',   text:'text-amber-800',   emoji:'⚠️' },
+      '疑似虚假':             { bg:'bg-red-50',     border:'border-red-200',     text:'text-red-800',     emoji:'❌' },
+      '无法判断':             { bg:'bg-slate-50',   border:'border-slate-200',   text:'text-slate-800',   emoji:'❓' },
+      'Credible':            { bg:'bg-emerald-50', border:'border-emerald-200', text:'text-emerald-800', emoji:'✅' },
+      'Suspicious':          { bg:'bg-amber-50',   border:'border-amber-200',   text:'text-amber-800',   emoji:'⚠️' },
+      'Likely False':        { bg:'bg-red-50',     border:'border-red-200',     text:'text-red-800',     emoji:'❌' },
+      'Unable to Determine': { bg:'bg-slate-50',   border:'border-slate-200',   text:'text-slate-800',   emoji:'❓' },
+    };
+
+    const VALID_VERDICTS_ZH = ['可信','存疑','疑似虚假','无法判断'];
+    const VALID_VERDICTS_EN = ['Credible','Suspicious','Likely False','Unable to Determine'];
+
+    function sourceTypeClass(type) {
+      const map = {
+        '官方媒体':       'bg-blue-100 text-blue-800',
+        '自媒体':         'bg-fuchsia-100 text-fuchsia-800',
+        '境外媒体':       'bg-cyan-100 text-cyan-800',
+        '未知':           'bg-slate-100 text-slate-700',
+        'Official Media':    'bg-blue-100 text-blue-800',
+        'Independent Media': 'bg-fuchsia-100 text-fuchsia-800',
+        'Foreign Media':     'bg-cyan-100 text-cyan-800',
+        'Unknown':           'bg-slate-100 text-slate-700',
+      };
+      return map[type] || 'bg-slate-100 text-slate-700';
+    }
+
+    /* ── language state ───────────────────────────────────── */
+    const MAX_SIZE = 10 * 1024 * 1024;
+    const ALLOWED_TYPES = ['image/jpeg','image/png','image/webp'];
+
+    let currentLang = localStorage.getItem('lang') || 'en';
+    let selectedFile = null;
+    let hasResult = false;
+
+    const dropZone    = document.getElementById('drop-zone');
+    const fileInput   = document.getElementById('file-input');
+    const uploadPrompt= document.getElementById('upload-prompt');
+    const previewWrap = document.getElementById('preview-wrap');
+    const previewImg  = document.getElementById('preview-img');
+    const previewName = document.getElementById('preview-name');
+    const analyzeBtn  = document.getElementById('analyze-btn');
+    const loading     = document.getElementById('loading');
+    const result      = document.getElementById('result');
+
+    function t(key) { return I18N[currentLang][key]; }
+
+    function applyLang() {
+      document.documentElement.lang = currentLang;
+      document.title = t('pageTitle');
+      document.getElementById('hdr-title').textContent = t('title');
+      document.getElementById('hdr-sub').textContent   = t('sub');
+      document.getElementById('hdr-tip').textContent   = t('tip');
+      document.getElementById('upload-label').textContent = t('uploadLabel');
+      document.getElementById('upload-hint').textContent  = t('uploadHint');
+      document.getElementById('loading-text').textContent = t('loadingText');
+      document.getElementById('footer-text').textContent  = t('footer');
+      previewImg.alt = t('previewAlt');
+
+      // button text (don't overwrite while loading)
+      if (!analyzeBtn.disabled) {
+        analyzeBtn.textContent = hasResult ? t('reanalyzeBtn') : t('analyzeBtn');
+      }
+
+      // lang toggle styling
+      const active   = 'bg-slate-900 text-white';
+      const inactive = 'text-slate-600 hover:bg-slate-100';
+      const enBtn = document.getElementById('lang-en-btn');
+      const zhBtn = document.getElementById('lang-zh-btn');
+      enBtn.className = 'px-3 py-1.5 transition ' + (currentLang === 'en' ? active : inactive);
+      zhBtn.className = 'px-3 py-1.5 transition ' + (currentLang === 'zh' ? active : inactive);
+    }
+
+    function setLang(lang) {
+      currentLang = lang;
+      localStorage.setItem('lang', lang);
+      applyLang();
+    }
+
+    /* ── file handling ────────────────────────────────────── */
+    fileInput.addEventListener('change', (e) => { if (e.target.files[0]) setFile(e.target.files[0]); });
+
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.classList.add('border-teal-500','bg-teal-50');
+    });
+    dropZone.addEventListener('dragleave', () => {
+      dropZone.classList.remove('border-teal-500','bg-teal-50');
+    });
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('border-teal-500','bg-teal-50');
+      if (e.dataTransfer.files[0]) setFile(e.dataTransfer.files[0]);
+    });
+
+    analyzeBtn.addEventListener('click', analyze);
+
+    function setFile(file) {
+      clearResult();
+      if (!ALLOWED_TYPES.includes(file.type)) {
+        selectedFile = null;
+        renderError(t('errType'));
+        return;
+      }
+      if (file.size > MAX_SIZE) {
+        selectedFile = null;
+        renderError(t('errSize'));
+        return;
+      }
+      selectedFile = file;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        previewImg.src = e.target.result;
+        previewName.textContent = `${file.name} · ${formatSize(file.size)}`;
+        uploadPrompt.classList.add('hidden');
+        previewWrap.classList.remove('hidden');
+        analyzeBtn.classList.remove('hidden');
+        analyzeBtn.textContent = t('analyzeBtn');
+        hasResult = false;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    /* ── analysis ─────────────────────────────────────────── */
+    async function analyze() {
+      if (!selectedFile) return;
+      const formData = new FormData();
+      formData.append('image', selectedFile);
+      formData.append('lang', currentLang);
+
+      setLoading(true);
+      clearResult();
+
+      try {
+        const response = await fetch('/analyze', { method: 'POST', body: formData });
+        const data = await response.json();
+        if (!response.ok || data.error) {
+          renderError(data.error || t('errDefault'));
+          return;
+        }
+        renderResult(data);
+      } catch (_) {
+        renderError(t('errNetwork'));
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    function setLoading(isLoading) {
+      loading.classList.toggle('hidden', !isLoading);
+      analyzeBtn.disabled = isLoading;
+      analyzeBtn.textContent = isLoading ? t('analyzingBtn') : t('reanalyzeBtn');
+    }
+
+    /* ── render ───────────────────────────────────────────── */
+    function renderResult(data) {
+      hasResult = true;
+      result.classList.remove('hidden');
+
+      if (!data.has_source) {
+        result.innerHTML = `
+          <div class="rounded-lg border border-amber-200 bg-amber-50 p-5 shadow-sm">
+            <div class="mb-2 text-3xl">❓</div>
+            <h2 class="text-lg font-bold text-amber-950">${escapeHtml(t('noSourceTitle'))}</h2>
+            <p class="mt-2 text-sm leading-6 text-amber-900">${escapeHtml(data.message || t('noSourceDef'))}</p>
+          </div>`;
+        return;
+      }
+
+      const verdict = normalizeVerdict(data.verdict);
+      const styles  = VERDICT_STYLES[verdict] || VERDICT_STYLES['Unable to Determine'];
+      const source  = data.source || {};
+      const reasons = Array.isArray(data.reasons) ? data.reasons : [];
+      const hint    = t('verdictHints')[verdict] || '';
+
+      result.innerHTML = `
+        <div class="rounded-lg border ${styles.border} ${styles.bg} p-5 shadow-sm">
+          <div class="flex items-start gap-3">
+            <div class="text-4xl leading-none">${escapeHtml(data.verdict_emoji || styles.emoji)}</div>
+            <div class="min-w-0 flex-1">
+              <p class="text-sm text-slate-600">${escapeHtml(t('verdictLabel'))}</p>
+              <div class="flex items-end justify-between gap-2">
+                <h2 class="mt-1 text-3xl font-bold ${styles.text}">${escapeHtml(verdict)}</h2>
+                <p class="mb-1 max-w-[180px] text-right text-xs leading-5 text-slate-500">${escapeHtml(hint)}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-5 grid gap-3 sm:grid-cols-2">
+            <div class="rounded-md border border-white/70 bg-white p-3">
+              <p class="text-xs text-slate-500">${escapeHtml(t('sourceName'))}</p>
+              <p class="mt-1 break-words text-base font-semibold text-slate-900">${escapeHtml(source.name || t('unknownSrc'))}</p>
+            </div>
+            <div class="rounded-md border border-white/70 bg-white p-3">
+              <p class="text-xs text-slate-500">${escapeHtml(t('sourceType'))}</p>
+              <div class="mt-2 flex flex-wrap gap-2">
+                <span class="rounded-full px-2.5 py-1 text-xs font-medium ${sourceTypeClass(source.type)}">${escapeHtml(source.type || t('unknownSrc'))}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-5">
+            <h3 class="text-sm font-semibold text-slate-900">${escapeHtml(t('reasonsTitle'))}</h3>
+            <ul class="mt-2 space-y-2 text-sm leading-6 text-slate-700">
+              ${reasons.length
+                ? reasons.map(r => `<li class="flex gap-2"><span class="text-slate-400">•</span><span>${escapeHtml(r)}</span></li>`).join('')
+                : `<li>${escapeHtml(t('noReasons'))}</li>`}
+            </ul>
+          </div>
+
+          <div class="mt-5 rounded-md border border-white/70 bg-white p-3">
+            <h3 class="text-sm font-semibold text-slate-900">${escapeHtml(t('suggestion'))}</h3>
+            <p class="mt-2 text-sm leading-6 text-slate-700">${escapeHtml(data.suggestion || '')}</p>
+          </div>
+
+          ${renderEvidence(data.evidence)}
+        </div>`;
+
+      const adSlot = document.getElementById('ad-slot');
+      adSlot.classList.remove('hidden');
+      document.getElementById('ad-inner').outerHTML = '<div id="ad-inner"><!-- AD_CODE_PLACEHOLDER --></div>';
+    }
+
+    function renderEvidence(evidence) {
+      if (!evidence || typeof evidence !== 'object') return '';
+      const found     = Boolean(evidence.official_match_found);
+      const url       = evidence.official_url || '';
+      const used      = Number.isFinite(Number(evidence.search_queries_used))  ? Number(evidence.search_queries_used)  : 0;
+      const cacheHits = Number.isFinite(Number(evidence.search_cache_hits))    ? Number(evidence.search_cache_hits)    : 0;
+      const badgeClass= found ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-700';
+      const label     = found ? t('evidenceFound') : t('evidenceNone');
+      return `
+        <div class="mt-5 rounded-md border border-white/70 bg-white p-3">
+          <div class="flex flex-wrap items-center gap-2">
+            <h3 class="text-sm font-semibold text-slate-900">${escapeHtml(t('evidenceTitle'))}</h3>
+            <span class="rounded-full px-2.5 py-1 text-xs font-medium ${badgeClass}">${escapeHtml(label)}</span>
+          </div>
+          <p class="mt-2 text-sm leading-6 text-slate-700">${escapeHtml(t('evidenceStats')(used, cacheHits))}</p>
+          ${url ? `<a class="mt-2 block break-all text-sm font-medium text-teal-700 underline" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(url)}</a>` : ''}
+        </div>`;
+    }
+
+    function renderError(message) {
+      result.classList.remove('hidden');
+      result.innerHTML = `
+        <div class="rounded-lg border border-red-200 bg-red-50 p-4 text-sm leading-6 text-red-800 shadow-sm">
+          ⚠️ ${escapeHtml(message)}
+        </div>`;
+    }
+
+    function clearResult() {
+      hasResult = false;
+      result.classList.add('hidden');
+      result.innerHTML = '';
+      document.getElementById('ad-slot').classList.add('hidden');
+    }
+
+    /* ── helpers ──────────────────────────────────────────── */
+    function normalizeVerdict(verdict) {
+      if (VALID_VERDICTS_ZH.includes(verdict) || VALID_VERDICTS_EN.includes(verdict)) return verdict;
+      return currentLang === 'en' ? 'Unable to Determine' : '无法判断';
+    }
+
+    function formatSize(bytes) {
+      if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+      return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll('&',  '&amp;')
+        .replaceAll('<',  '&lt;')
+        .replaceAll('>',  '&gt;')
+        .replaceAll('"',  '&quot;')
+        .replaceAll("'",  '&#039;');
+    }
+
+    /* ── init ─────────────────────────────────────────────── */
+    applyLang();
+  </script>
+</body>
+</html>

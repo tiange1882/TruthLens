@@ -1,0 +1,23 @@
+# secrets — never commit
+.env
+# 整个微信小程序目录与网页部署无关，且多处含明文密钥，整体排除
+小程序/
+
+# python
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# flask local logs
+*.log
+flask.cli.log
+flask.cmd.log
+flask.err.log
+flask.out.log
+
+# editor / agent
+.claude/
+.vscode/
+.idea/
+.DS_Store

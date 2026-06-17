@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: fake-news-detector
+    runtime: python
+    region: singapore        # 离 dashscope（中国大陆）最近，模型调用最快
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    # --timeout 180 是关键：单次分析可能跑 1-2 分钟，
+    # gunicorn 默认 30 秒会把请求杀掉。务必保留。
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --threads 4 --timeout 180
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.8"
+      # 下面 4 个密钥不写进仓库，部署时在 Render 网页里手动填
+      - key: ZHIPU_API_KEY
+        sync: false
+      - key: ZHIPU_MODEL
+        sync: false
+      - key: ZHIPU_ENDPOINT
+        sync: false
+      - key: BRAVE_API_KEY
+        sync: false
