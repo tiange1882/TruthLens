@@ -37,6 +37,11 @@
       <p  id="hdr-tip"   class="mt-1 text-xs leading-5 text-slate-400"></p>
     </header>
 
+    <!-- Disclaimer banner -->
+    <div class="mb-5 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3">
+      <p id="disclaimer-text" class="text-xs leading-5 text-amber-900"></p>
+    </div>
+
     <!-- Upload card -->
     <section class="rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
       <label
@@ -94,6 +99,7 @@
         title:        'News Verifier',
         sub:          'Upload a news screenshot. AI identifies the source and assesses credibility.',
         tip:          'AI analysis has some variability — running it multiple times may give more accurate results.',
+        disclaimer:   '⚠️ This is an AI-generated assessment for reference only. It is not a factual determination, nor an accusation against any individual or organization, and may be inaccurate. Always verify important information with official sources.',
         uploadLabel:  'Click to upload or drag image here',
         uploadHint:   'JPG, PNG, WEBP · max 10 MB',
         previewAlt:   'Image preview',
@@ -120,10 +126,10 @@
         footer:       'AI analysis is for reference only and does not constitute authoritative conclusions. For important information, rely on official sources and professional fact-checkers.\nThis tool uses Eastern Time (ET) as the reference timezone.',
         unknownSrc:   'Unknown',
         verdictHints: {
-          'Credible':            'This news is approximately 90% likely to be genuine.',
-          'Suspicious':          'This news is approximately 60% likely to be genuine. AI has some uncertainty — consider analyzing multiple times.',
-          'Likely False':        'This news is only approximately 10% likely to be genuine. Treat with caution.',
-          'Unable to Determine': 'Insufficient information for a reliable verdict.',
+          'Credible':            'AI estimates this is likely genuine (~90%). This is not a verified fact — confirm important news with official sources.',
+          'Suspicious':          'AI estimates roughly 60% likelihood of being genuine, with notable uncertainty. Re-analyzing may help.',
+          'Likely False':        'AI estimates a low likelihood of being genuine (~10%). This is not a factual determination — verify before believing or sharing.',
+          'Unable to Determine': 'Insufficient information for a reliable estimate.',
         },
       },
       zh: {
@@ -131,6 +137,7 @@
         title:        '假新闻判断器',
         sub:          '上传新闻截图，AI 会先识别来源，再给出可信度判断。',
         tip:          'AI 的分析报告有一定随机性，多次点分析按钮结果更准确哦~',
+        disclaimer:   '⚠️ 本结果由 AI 自动生成，仅供参考，不代表事实认定，也不构成对任何个人或机构的指控，可能存在错误。重要信息请以官方发布为准。',
         uploadLabel:  '点击上传或拖拽图片到这里',
         uploadHint:   '支持 JPG、PNG、WEBP，最大 10MB',
         previewAlt:   '上传图片预览',
@@ -157,10 +164,10 @@
         footer:       'AI 判断仅供参考，不构成权威结论。重要信息请以官方发布和专业事实核查为准。\n本工具以美东时间（ET）为基准判断发布时间，其他时区的消息可能存在时区差异。',
         unknownSrc:   '未知',
         verdictHints: {
-          '可信':    '该新闻有约 90% 可能性是真实的。',
-          '存疑':    '该新闻有约 60% 可能性是真实的，AI 存在不确定因素，建议多分析几次。',
-          '疑似虚假': '该新闻只有约 10% 可能性是真实的，请谨慎相信。',
-          '无法判断': '信息不足，AI 无法给出可靠判断。',
+          '可信':    'AI 评估该新闻较可能为真（约 90%）。这不是事实认定，重要信息请以官方发布为准。',
+          '存疑':    'AI 评估约 60% 可能为真，存在明显不确定性，建议多分析几次。',
+          '疑似虚假': 'AI 评估为真的可能性较低（约 10%）。这不是事实认定，请先核实再相信或转发。',
+          '无法判断': '信息不足，AI 无法给出可靠评估。',
         },
       },
     };
@@ -220,6 +227,7 @@
       document.getElementById('hdr-title').textContent = t('title');
       document.getElementById('hdr-sub').textContent   = t('sub');
       document.getElementById('hdr-tip').textContent   = t('tip');
+      document.getElementById('disclaimer-text').textContent = t('disclaimer');
       document.getElementById('upload-label').textContent = t('uploadLabel');
       document.getElementById('upload-hint').textContent  = t('uploadHint');
       document.getElementById('loading-text').textContent = t('loadingText');
