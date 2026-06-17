@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: fake-news-detector
+    name: truthlens
     runtime: python
     region: singapore        # 离 dashscope（中国大陆）最近，模型调用最快
     plan: free
